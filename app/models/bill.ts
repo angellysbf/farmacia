@@ -5,6 +5,18 @@ export default class Bill extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
+  @column()
+  declare products: JSON
+
+  @column()
+  declare user_id: number
+
+  @column()
+  declare payment_id: number
+
+  @column()
+  declare total: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
