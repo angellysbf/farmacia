@@ -1,5 +1,8 @@
+import Rol from './rol.js'
+import Payment from './payment.js'
+import type { HasOne, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasOne, hasMany  } from '@adonisjs/lucid/orm'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -11,8 +14,11 @@ export default class User extends BaseModel {
   @column()
   declare google_id: number
 
-  @column()
-  declare rol_id: number
+  @hasOne(() => Rol)
+  declare rol_id: HasOne<typeof Rol>
+
+  @hasMany(() => Payment)
+  declare payment: HasMany<typeof Payment>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
