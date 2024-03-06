@@ -1,21 +1,25 @@
+import PaymentPlatform from './payment_platform.js'
+import Bill from './bill.js'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
+
 
 export default class Payment extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare payment_platform_id: number
+  @hasOne(() => PaymentPlatform)
+  declare payment_platform_id: HasOne<typeof PaymentPlatform>
 
-  @column()
-  declare bill_id: number
+  @hasOne(() => Bill)
+  declare bill_id: HasOne<typeof Bill>
 
   @column()
   declare user_id: number
 
   @column()
-  declare payment_id: number
+  declare transference_id: number
 
   @column()
   declare total: number
