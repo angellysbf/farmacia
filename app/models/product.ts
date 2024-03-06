@@ -1,12 +1,14 @@
+import Category from './category.js'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
 
 export default class Product extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare category_id: number
+  @hasOne(() => Category)
+  declare category_id: HasOne<typeof Category>
 
   @column()
   declare name: string
