@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('email', 80)
       table.string('google_id')
       table.string('password')
-      table.integer('rol_id').references('rols.id')
+      table.integer('rol_id').unsigned().references('id').inTable('rols')
       
       table.timestamp('created_at')
       table.timestamp('updated_at')

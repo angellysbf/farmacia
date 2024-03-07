@@ -6,9 +6,9 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('payment_platform_id').unsigned().references('payment_platforms.id')
-      table.integer('bill_id').unsigned().references('bills.id')
-      table.integer('user_id').unsigned().references('users.id')
+      table.integer('payment_platform_id').unsigned().references('id').inTable('payment_platforms')
+      table.integer('bill_id').unsigned().references('id').inTable('bills')
+      table.integer('user_id').unsigned().references('id').inTable('users')
       table.string('payment_id')
       table.float('total')
       table.string('status')
