@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.integer('category_id').unsigned().references('id').inTable('categories')
       table.string('name')
       table.integer('available_quantity')
-      table.integer('reserved_quantity')
+      table.integer('reserved_quantity').defaultTo(0)
       table.integer('total_quantity')
       table.float('price')
 
