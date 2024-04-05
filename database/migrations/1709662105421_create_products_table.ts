@@ -7,11 +7,11 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.integer('category_id').unsigned().references('id').inTable('categories')
-      table.string('name')
-      table.integer('available_quantity')
+      table.string('name').notNullable
+      table.integer('available_quantity').notNullable
       table.integer('reserved_quantity').defaultTo(0)
-      table.integer('total_quantity')
-      table.float('price')
+      table.integer('total_quantity').notNullable
+      table.float('price').notNullable
 
       table.timestamp('created_at')
       table.timestamp('updated_at')
