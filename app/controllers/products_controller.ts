@@ -6,37 +6,105 @@ import { ApiResponse } from '../utilities/responses.js'
 const res = new ApiResponse()
 
 export default class ProductsController {
-    async list({ response } : HttpContext){
+    async list({ request, response } : HttpContext){
         try {
-            const product = await Product.all()
-            if (product.length === 0) 
-                return response.status(200).send(res.inform('No hay productos'))         
+            const { page, limit } = request.params()     
+            const {priceSort} = request.qs()   
+            let ascOrDesc
+            let products
+            console.log(ascOrDesc);
+            
+            if (!page || !limit) return response.status(500).send(res.inform('Se necesita establecer el numero de pagina y el rango de items')) 
 
-            return response.status(200).send(res.provide(product, 'Lista de productos'))    
+            if (priceSort) {
+                if (priceSort != 'asc' || priceSort != 'desc') {
+                    return response.status(400).send(res.inform('Se necesita asc o desc para ordenar los productos'))    
+                }
+                products = await db.from('products').orderBy('price', priceSort).paginate(page, limit)
+
+            } else {
+                products = await db.from('products').paginate(page, limit)
+            }
+            
+
+            // const product = await Product.all()
+            if (products.length === 0) 
+                return response.status(404).send(res.inform('No hay productos'))         
+
+            return response.status(200).send(res.provide(products, 'Lista de productos'))    
         
         } catch (error) {
-            response.status(500).send(res.unexpected())
             console.log(error);
+            return response.status(500).send(res.unexpected())
         }
     }
 
     async find_by_id({ request, response }: HttpContext){
-
+        try {
+            const {id} = request.params()
+            const product = await Product.findOrFail(id)
+    
+            if (!product) return response.status(200).send(res.inform('No existe este producto')) 
+            
+            return response.status(200).send(res.provide(product, 'Producto encontrado'))
+        } catch (error) {
+            console.log(error);
+            if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este producto'))
+            return response.status(500).send(res.unexpected())
+        }
     }
 
     async search_by_name({ request, response }: HttpContext){
+        try {
+            const {name} = request.params()
+            const product = await db.from('products').whereILike('name', `%${name}%`).limit(10)
+    
+            if (product.length == 0) return response.status(404).send(res.inform('No se encontro ningun producto')) 
+            
+            return response.status(200).send(res.provide(product, 'Productos encontrado'))
+        } catch (error) {
+            console.log(error);
+            return response.status(500).send(res.unexpected())
+        }
+
+    }
+
+    async list_order_by({ request, response }: HttpContext){
+        try {
+            const { category, priceSort } = request.qs();
+            const {page, limit} = request.params()
+            var products
+
+            if (category && priceSort){
+                products = await db.from('products').where('category_id', category).orderBy('price', priceSort).paginate(page, limit)
+            } else {
+                if (category){
+                    products = await db.from('products').where('category_id', category).paginate(page, limit)
+                }
+                if (priceSort){
+                    products = await db.from('products').orderBy('price', priceSort).paginate(page, limit)
+                }
+            }
+            if (!products) return response.status(404).send(res.inform('No se encontro ningun producto'))
+
+            return response.status(200).send(res.provide(products, 'Lista de productos'))    
+        
+        } catch (error) {
+            console.log(error);
+            return response.status(500).send(res.unexpected())
+        }
 
     }
 
 
-    async add({ request, response }: HttpContext){
+    async create({ request, response }: HttpContext){
         try {
             const to_add = request.body()
             console.log(to_add);
             
             const category = await Category.find(to_add.category_id)
             if (!category) {
-                return response.status(400).send(res.inform(`La categoria ${to_add.category_id} no fue encontrada`))
+                return response.status(400).send(res.inform(`La categoria de id:${to_add.category_id} no fue encontrada`))
             }
 
             const saved = await db
@@ -50,7 +118,7 @@ export default class ProductsController {
                 price: to_add.price
             })
             
-            return response.status(200).send(res.provide(saved, `El producto ${saved.name} fue guardado correctamente bajo el id ${saved.id}`))    
+            return response.status(200).send(res.provide(saved, `El producto ${saved[0].name} fue guardado correctamente bajo el id ${saved[0].id}`))    
             
         } catch (error) {
             response.status(500).send(res.unexpected())
@@ -58,11 +126,42 @@ export default class ProductsController {
         }
     }
 
-    async delete(ctx: HttpContext){
+    async delete({ request, response }: HttpContext){
+        try {
+            const { id } = request.params()        
+            if (!id) return response.status(500).send(res.inform('El id es necesario')) 
+            
+            const product = await Product.findOrFail(id)
+            await product.delete()
+
+            return response.status(200).send(res.provide(null, `El producto ${product.name} ha sido borrado exitosamente`))    
+        
+        } catch (error) {
+            console.log(error.code);
+            if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este producto'))
+            return response.status(500).send(res.unexpected())
+        }
 
     }
 
-    async update(ctx: HttpContext){
+    async update({ request, response }: HttpContext){
+        try {
+            const { id } = request.params()
+            const { name, price } = request.body()   
+    
+            if (!name && !price) return response.status(400).send(res.inform('No hay informacion para actualizar')) 
+            
+            const product = await Product.findOrFail(id)
+            if (name) product.name = name
+            if (price) product.price = price    
+            await product.save()
 
+            return response.status(200).send(res.provide(null, `El producto ${product.name} ha sido actualizado exitosamente`))    
+
+        } catch (error) {
+            console.log(error.code);
+            if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este producto'))
+            return response.status(500).send(res.unexpected())
+        }
     }
 }
