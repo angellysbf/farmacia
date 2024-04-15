@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.integer('payment_platform_id').unsigned().references('id').inTable('payment_platforms')
       table.integer('bill_id').unsigned().references('id').inTable('bills')
       table.integer('user_id').unsigned().references('id').inTable('users')
-      table.string('payment_id').notNullable
+      table.string('transference_id').notNullable
       table.float('total').notNullable
       table.string('status').defaultTo('unpaid')
       table.string('address').notNullable
