@@ -11,5 +11,8 @@ export class ApiResponse{
         return {body: body, message: message}
     }
 
+    typeError(data: string, type: string) {
+        return {body: null, message: `El dato ${data} no corresponde al tipo ${type}`}
+    }
     
 }
