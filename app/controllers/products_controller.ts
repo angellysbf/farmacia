@@ -26,8 +26,6 @@ export default class ProductsController {
                 products = await db.from('products').paginate(page, limit)
             }
             
-
-            // const product = await Product.all()
             if (products.length === 0) 
                 return response.status(404).send(res.inform('No hay productos'))         
 
@@ -99,23 +97,27 @@ export default class ProductsController {
 
     async create({ request, response }: HttpContext){
         try {
-            const to_add = request.body()
-            console.log(to_add);
+            const {
+                name,
+                category_id,
+                available_quantity,
+                price
+            } = request.body()
             
-            const category = await Category.find(to_add.category_id)
+            const category = await Category.find(category_id)
             if (!category) {
-                return response.status(400).send(res.inform(`La categoria de id:${to_add.category_id} no fue encontrada`))
+                return response.status(400).send(res.inform(`La categoria de id:${category_id} no fue encontrada`))
             }
 
             const saved = await db
             .table('products')
             .returning(['id', 'name'])
             .insert({
-                name: to_add.name,
+                name: name,
                 category_id: category.id,
-                available_quantity: to_add.available_quantity,
-                total_quantity: to_add.available_quantity,
-                price: to_add.price
+                available_quantity: available_quantity,
+                total_quantity: available_quantity,
+                price: price
             })
             
             return response.status(200).send(res.provide(saved, `El producto ${saved[0].name} fue guardado correctamente bajo el id ${saved[0].id}`))    
