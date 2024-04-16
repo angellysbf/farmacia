@@ -36,6 +36,36 @@ router.group(() => {
 })
 .prefix('/categories')
 
+
+router.group(() => {
+  const PaymentsController = () => import('#controllers/payments_controller')
+  router.get('', [PaymentsController, 'see_payments'])
+
+  router.post('/make-payment', [PaymentsController, 'make_payment'])
+  router.put('/paid', [PaymentsController, 'payment_is_paid'])
+  router.delete('/delete-payment/:id', [PaymentsController, 'delete_payment'])
+
+
+  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
+  router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform'])
+  router.delete('/delete-payment-platform/:id', [PaymentsController, 'delete_payment_platform'])
+
+})
+.prefix('/payments')
+
+
+// router.group(() => {
+//   const PaymentsController = () => import('#controllers/bill_controller')
+//   router.get('/bills', [PaymentsController, 'see_payments'])
+
+//   router.post('/make-payment', [PaymentsController, 'make_payment'])
+
+//   // router.delete('', [PaymentsController, 'delete'])
+
+//   router.put('/paid', [PaymentsController, 'payment_is_paid'])
+// })
+// .prefix('/bills')
+
 router.get('/', async () => {
   return {
     hello: 'world',
