@@ -20,7 +20,7 @@ export default class Payment extends BaseModel {
 
   @column()
   declare transference_id: number
-
+  
   @column()
   declare total: number
 
