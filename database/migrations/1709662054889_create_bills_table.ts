@@ -6,6 +6,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.integer('user_id')
       table.json('products').notNullable
       table.float('total').notNullable
       table.float('discount')
