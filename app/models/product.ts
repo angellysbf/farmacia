@@ -14,6 +14,9 @@ export default class Product extends BaseModel {
   declare name: string
 
   @column()
+  declare imgURL: string 
+
+  @column()
   declare available_quantity: number
 
   @column()
