@@ -42,17 +42,38 @@ router.group(() => {
   router.get('', [PaymentsController, 'see_payments'])
 
   router.post('/make-payment', [PaymentsController, 'make_payment'])
+
   router.put('/paid', [PaymentsController, 'payment_is_paid'])
+
   router.delete('/delete-payment/:id', [PaymentsController, 'delete_payment'])
 
 
   router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
+
   router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform'])
+  
   router.delete('/delete-payment-platform/:id', [PaymentsController, 'delete_payment_platform'])
 
 })
 .prefix('/payments')
 
+router.group(() => {
+  const CartsController = () => import('#controllers/carts_controller')
+  router.post('/create-cart', [CartsController, 'create_cart'])
+
+  router.put('/add-product', [CartsController, 'add_product'])
+  router.put('/delete-product', [CartsController, 'delete_product'])
+  router.put('/update-product', [CartsController, 'update_product'])
+
+})
+.prefix('/cart')
+
+router.group(() => {
+  const AuthController = () => import('#controllers/auth_controller')
+  router.post('/sign-up', [AuthController, 'signup'])
+  router.post('/log-in', [AuthController, 'login'])
+})
+.prefix('/auth')
 
 // router.group(() => {
 //   const PaymentsController = () => import('#controllers/bill_controller')
