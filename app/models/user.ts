@@ -12,7 +12,13 @@ export default class User extends BaseModel {
   declare email: string
 
   @column()
-  declare google_id: number
+  declare name: string
+
+  @column()
+  declare phone: string
+
+  @column()
+  declare password: string
 
   @hasOne(() => Rol)
   declare rol_id: HasOne<typeof Rol>
