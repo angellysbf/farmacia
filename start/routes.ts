@@ -8,6 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
 
 router.group(() => {
   const ProductsController = () => import('#controllers/products_controller')
@@ -71,7 +72,7 @@ router.group(() => {
 router.group(() => {
   const AuthController = () => import('#controllers/auth_controller')
   router.post('/sign-up', [AuthController, 'signup'])
-  router.post('/log-in', [AuthController, 'login'])
+  router.post('/log-in', [AuthController, 'login']).use(middleware.admin())
 })
 .prefix('/auth')
 
