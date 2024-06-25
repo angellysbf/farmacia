@@ -6,7 +6,10 @@ export default class Cart extends BaseModel {
   declare id: number
 
   @column()
-  declare products: JSON
+  declare products: Array<JSON>
+
+  @column()
+  declare user_id: number
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

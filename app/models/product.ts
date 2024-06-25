@@ -14,6 +14,9 @@ export default class Product extends BaseModel {
   declare name: string
 
   @column()
+  declare description: string
+
+  @column()
   declare imgURL: string 
 
   @column()

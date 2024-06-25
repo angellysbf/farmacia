@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.integer('category_id').unsigned().references('id').inTable('categories')
       table.string('name').notNullable
+      table.text('description').notNullable
       table.string('imgURL').notNullable
       table.integer('available_quantity').notNullable
       table.integer('reserved_quantity').defaultTo(0)

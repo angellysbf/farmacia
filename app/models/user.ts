@@ -18,6 +18,9 @@ export default class User extends BaseModel {
   declare phone: string
 
   @column()
+  declare direction: string
+
+  @column()
   declare password: string
 
   @hasOne(() => Rol)

@@ -12,7 +12,7 @@ export default class Bill extends BaseModel {
   declare user_id: number
 
   @column()
-  declare payment_id: number
+  declare transference_id: string
 
   @column()
   declare total: number
