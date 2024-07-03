@@ -31,9 +31,9 @@ router.group(() => {
   const CategoriesController = () => import('#controllers/categories_controller')
   router.get('/', [CategoriesController, 'list'])
 
-  router.post('', [CategoriesController, 'add'])
+  router.post('', [CategoriesController, 'add']).use(middleware.token())
 
-  router.delete('', [CategoriesController, 'delete'])
+  router.delete('', [CategoriesController, 'delete']).use(middleware.token())
 })
 .prefix('/categories')
 
@@ -41,7 +41,8 @@ router.group(() => {
 router.group(() => {
   const PaymentsController = () => import('#controllers/payments_controller')
   router.get('', [PaymentsController, 'see_payments'])
-
+  router.get('/:search', [PaymentsController, 'search_payments'])
+  
   router.post('/make-payment', [PaymentsController, 'make_payment'])
 
   router.put('/paid', [PaymentsController, 'payment_is_paid'])
@@ -60,7 +61,7 @@ router.group(() => {
 
 router.group(() => {
   const CartsController = () => import('#controllers/carts_controller')
-  router.post('/create-cart', [CartsController, 'create_cart'])
+  router.post('/handle-cart', [CartsController, 'handle_cart'])
 
   router.put('/add-product', [CartsController, 'add_product'])
   router.put('/delete-product', [CartsController, 'delete_product'])
@@ -72,21 +73,18 @@ router.group(() => {
 router.group(() => {
   const AuthController = () => import('#controllers/auth_controller')
   router.post('/sign-up', [AuthController, 'signup'])
-  router.post('/log-in', [AuthController, 'login']).use(middleware.admin())
+  router.post('/log-in', [AuthController, 'login'])
 })
 .prefix('/auth')
 
-// router.group(() => {
-//   const PaymentsController = () => import('#controllers/bill_controller')
-//   router.get('/bills', [PaymentsController, 'see_payments'])
-
-//   router.post('/make-payment', [PaymentsController, 'make_payment'])
-
-//   // router.delete('', [PaymentsController, 'delete'])
-
-//   router.put('/paid', [PaymentsController, 'payment_is_paid'])
-// })
-// .prefix('/bills')
+router.group(() => {
+  const UserController = () => import('#controllers/users_controller')
+  router.get('/', [UserController, 'find_by_token'])
+  router.get('/payments', [UserController, 'payments'])
+  router.get('/payments/:search', [UserController, 'search_payments'])
+  router.put('/', [UserController, 'update'])
+})
+.prefix('/user').use(middleware.token())
 
 router.get('/', async () => {
   return {

@@ -58,6 +58,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@vinejs/vine": "^1.7.1",
     "argon2": "^0.31.2",
+    "aws-sdk": "^2.1622.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.4.4",
     "pg": "^8.11.3",

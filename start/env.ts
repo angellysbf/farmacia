@@ -44,5 +44,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring the JWT
   |----------------------------------------------------------
   */
-  JWT_SECRET: Env.schema.string()
+  JWT_SECRET: Env.schema.string(),
+
+  BUCKET_NAME: Env.schema.string()
 })
