@@ -7,9 +7,9 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.integer('payment_platform_id').unsigned().references('id').inTable('payment_platforms')
-      table.integer('bill_id').unsigned().references('id').inTable('bills')
+      table.specificType('products', 'json[]').notNullable
       table.integer('user_id')
-      table.string('transference_id').notNullable
+      table.string('transference_id').unique().notNullable
       table.float('total').notNullable
       table.string('status').defaultTo('unpaid')
       table.string('address').notNullable

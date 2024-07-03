@@ -12,8 +12,8 @@ export default class Payment extends BaseModel {
   @hasOne(() => PaymentPlatform)
   declare payment_platform_id: HasOne<typeof PaymentPlatform>
 
-  @hasOne(() => Bill)
-  declare bill_id: HasOne<typeof Bill>
+  @column()
+  declare products: Array<JSON>
 
   @column()
   declare user_id: number

@@ -18,13 +18,13 @@ export default class User extends BaseModel {
   declare phone: string
 
   @column()
-  declare direction: string
+  declare address: string
 
   @column()
   declare password: string
 
-  @hasOne(() => Rol)
-  declare rol_id: HasOne<typeof Rol>
+  @column()
+  declare rol_id: number
 
   @hasMany(() => Payment)
   declare payment: HasMany<typeof Payment>
