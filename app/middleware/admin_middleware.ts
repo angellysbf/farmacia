@@ -8,8 +8,8 @@ export default class AdminMiddleware {
     /**
      * Middleware logic goes here (before the next call)
      */
-    const {token} = ctx.request.body()
-    console.log(token);
+    const {authorization} = ctx.request.headers()
+    const token = authorization?.substring(7)
     
     var decoded = jwt.verify(token, process.env.JWT_SECRET);
     
