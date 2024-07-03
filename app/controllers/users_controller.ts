@@ -1,5 +1,6 @@
 import User from '#models/user'
 import Payment from '#models/payment'
+import db from '@adonisjs/lucid/services/db'
 
 import type { HttpContext } from '@adonisjs/core/http'
 import jwt from 'jsonwebtoken'
@@ -12,22 +13,20 @@ export default class UsersController {
         try {
             const {authorization} = request.headers()
             const token = authorization?.substring(7)
-
-            if (!token) return response.status(400).send(res.inform('Debe ser enviado un token de autorizacion')) 
-
+            
             var decoded = jwt.verify(token, process.env.JWT_SECRET);            
-
+            console.log(decoded);
+            
             const user = await User.findOrFail(decoded.id)
     
             if (!user) return response.status(404).send(res.inform('No existe este usuario')) 
-            
             user.password = ''
 
             return response.status(200).send(res.provide(user, 'Usuario encontrado'))
         } catch (error) {
             console.log(error);
+            console.log(error.message);
             if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este usuario'))
-            if (error.message == 'invalid token') return response.status(404).send(res.inform('Hay un problema con el token'))
             return response.status(500).send(res.unexpected())
         }
     }
@@ -36,17 +35,34 @@ export default class UsersController {
         try {
             const {authorization} = request.headers()
             const token = authorization?.substring(7)
-
-            if (!token) return response.status(400).send(res.inform('Debe ser enviado un token de autorizacion')) 
-
+            
             var decoded = jwt.verify(token, process.env.JWT_SECRET);            
+            
+            const payments = await db.from('payments').where('user_id', decoded.id).orderBy('id', 'desc')
 
-            const payments = await Payment.findBy('user_id', decoded.id)
-                
             return response.status(200).send(res.provide(payments, 'Lista de pagos'))
         } catch (error) {
             console.log(error);
-            if (error.message == 'invalid token') return response.status(404).send(res.inform('Hay un problema con el token'))
+            return response.status(500).send(res.unexpected())
+        }
+    }
+
+    async search_payments({ request, response }: HttpContext){
+        try {
+            const {authorization} = request.headers()
+            const {search} = request.params()
+            const token = authorization?.substring(7)
+            
+            var decoded = jwt.verify(token, process.env.JWT_SECRET);            
+            
+            const payments = await db.from('payments').where('user_id', decoded.id)
+            .andWhere('status', 'like', `%${search}%`)
+            .orWhere('transference_id', 'like', `%${search}%`)
+            .limit(10)
+            
+            return response.status(200).send(res.provide(payments, 'Lista de pagos'))
+        } catch (error) {
+            console.log(error);
             return response.status(500).send(res.unexpected())
         }
     }
@@ -54,11 +70,9 @@ export default class UsersController {
     async update({ request, response }: HttpContext){
         try {
             const {authorization} = request.headers()
-            const { name, email, phone, password } = request.body()    
+            const { name, email, address, phone, password } = request.body()    
 
             const token = authorization?.substring(7)
-
-            if (!token) return response.status(400).send(res.inform('Debe ser enviado un token de autorizacion')) 
 
             var decoded = jwt.verify(token, process.env.JWT_SECRET);            
 
@@ -86,13 +100,16 @@ export default class UsersController {
             if (name){
                 user.name = name
             }
+            if (address){
+                user.address = address
+            }
+
             user.save()
             
             return response.status(200).send(res.provide(user, 'Usuario encontrado'))
         } catch (error) {
             console.log(error);
             if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este usuario'))
-            if (error.message == 'invalid token') return response.status(404).send(res.inform('Hay un problema con el token'))
             return response.status(500).send(res.unexpected())
         }
     }

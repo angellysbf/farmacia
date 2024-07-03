@@ -6,28 +6,57 @@ import { ApiResponse } from '../utilities/responses.js'
 const res = new ApiResponse()
 
 export default class CartsController {
-    async create_cart({ request, response }: HttpContext){
+    async handle_cart({ request, response }: HttpContext){
         try {
-            const {products, user_id} = request.body()
-
-            if(Object.keys(products).length != 1) return response.status(500).send(res.inform('Es necesario un producto y solo un producto')) 
+            const {id, products, user_id} = request.body()
             
-            const product = Object.keys(products)[0]
-            const quantity = products[product]
-            const is_product = await Product.findByOrFail('name', product)
+            if (!id) {
+                return response.status(500).send(res.inform('Es necesario el id del carrito')) 
+            }
 
-            if (is_product.available_quantity < quantity) return response.status(200).send(res.inform('La cantidad pedida excede los productos disponibles'))
+            if(products.length < 1) return response.status(500).send(res.inform('Es necesario al menos un producto')) 
+                                            
+            var is_cart
 
-            const is_cart = await Cart.findBy('user_id', user_id)
+            if (user_id) {
+                is_cart = await Cart.findBy('user_id', user_id)
+            } else{
+                is_cart = await Cart.find(id)
+            }
 
-            if (is_cart) return response.status(500).send(res.inform('Ya existe un carrito para este usuario'))
+            var err
+            for (const product of products) {
+                const product_id = product.id
+                const quantity = product.quantity
 
-            const saved = await Cart.create({
-                products: products,
-                user_id: user_id
-            })
+                const is_product = await Product.find(product_id)
+                
+                if (!is_product) {
+                    err = `Este producto ${product_id} no existe`   
+                    break                 
+                }
 
-            return response.status(200).send(res.provide(saved, `El carro fue creado correctamente`))    
+                if (is_product.available_quantity < quantity) {
+                    err =`La cantidad pedida del producto ${product_id} excede los productos disponibles`
+                    break
+                }
+            };            
+            if (err) return response.status(500).send(res.inform(err)) 
+            
+            var saved
+            if (is_cart) {
+                is_cart.products = products
+                saved = await is_cart.save()
+            }else{
+                saved = await Cart.create({
+                    id: id,
+                    products: products,
+                    user_id: user_id
+                })    
+            }
+    
+
+            return response.status(200).send(res.provide(saved, `El carrito fue operado correctamente`))    
                     
         } catch (error) {
             console.log(error);

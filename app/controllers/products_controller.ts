@@ -12,7 +12,7 @@ export default class ProductsController {
             const {priceSort} = request.qs()   
             let ascOrDesc
             let products
-            console.log(ascOrDesc);
+            
             
             if (!page || !limit) return response.status(500).send(res.inform('Se necesita establecer el numero de pagina y el rango de items')) 
 
@@ -43,7 +43,8 @@ export default class ProductsController {
             const product = await Product.findOrFail(id)
     
             if (!product) return response.status(200).send(res.inform('No existe este producto')) 
-            
+            product.imgURL = product.$extras.imgURL
+
             return response.status(200).send(res.provide(product, 'Producto encontrado'))
         } catch (error) {
             console.log(error);
@@ -55,7 +56,7 @@ export default class ProductsController {
     async search_by_name({ request, response }: HttpContext){
         try {
             const {name} = request.params()
-            const product = await db.from('products').whereILike('name', `%${name}%`).limit(10)
+            const product = await db.from('products').whereILike('name', `%${name}%`).limit(20)
     
             if (product.length == 0) return response.status(404).send(res.inform('No se encontro ningun producto')) 
             
@@ -83,6 +84,11 @@ export default class ProductsController {
                     products = await db.from('products').orderBy('price', priceSort).paginate(page, limit)
                 }
             }
+            
+            if (!category && !priceSort){
+                products = await db.from('products').paginate(page, limit)
+            }
+            
             if (!products) return response.status(404).send(res.inform('No se encontro ningun producto'))
 
             return response.status(200).send(res.provide(products, 'Lista de productos'))    
@@ -99,9 +105,11 @@ export default class ProductsController {
         try {
             const {
                 name,
+                description,
                 category_id,
                 available_quantity,
-                price
+                price,
+                imgURL
             } = request.body()
             
             const category = await Category.find(category_id)
@@ -114,10 +122,12 @@ export default class ProductsController {
             .returning(['id', 'name'])
             .insert({
                 name: name,
+                description: description,
                 category_id: category.id,
                 available_quantity: available_quantity,
                 total_quantity: available_quantity,
-                price: price
+                price: price,
+                imgURL: imgURL
             })
             
             return response.status(200).send(res.provide(saved, `El producto ${saved[0].name} fue guardado correctamente bajo el id ${saved[0].id}`))    
@@ -149,13 +159,16 @@ export default class ProductsController {
     async update({ request, response }: HttpContext){
         try {
             const { id } = request.params()
-            const { name, price } = request.body()   
+            const { name, price, description, available_quantity} = request.body()   
     
             if (!name && !price) return response.status(400).send(res.inform('No hay informacion para actualizar')) 
             
             const product = await Product.findOrFail(id)
             if (name) product.name = name
-            if (price) product.price = price    
+            if (price) product.price = price 
+            if (description) product.description = description 
+            if (available_quantity) product.available_quantity = available_quantity 
+
             await product.save()
 
             return response.status(200).send(res.provide(null, `El producto ${product.name} ha sido actualizado exitosamente`))    

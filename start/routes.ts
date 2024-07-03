@@ -42,20 +42,15 @@ router.group(() => {
   const PaymentsController = () => import('#controllers/payments_controller')
   router.get('', [PaymentsController, 'see_payments'])
   router.get('/:search', [PaymentsController, 'search_payments'])
-  
+  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
+
   router.post('/make-payment', [PaymentsController, 'make_payment'])
+  router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform'])
 
   router.put('/paid', [PaymentsController, 'payment_is_paid'])
 
   router.delete('/delete-payment/:id', [PaymentsController, 'delete_payment'])
-
-
-  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
-
-  router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform'])
-  
   router.delete('/delete-payment-platform/:id', [PaymentsController, 'delete_payment_platform'])
-
 })
 .prefix('/payments')
 

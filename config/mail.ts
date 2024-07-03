@@ -21,7 +21,8 @@ const mailConfig = defineConfig({
         type: 'login',
         user: env.get('SMTP_USERNAME'),
         pass: env.get('SMTP_PASSWORD'),
-      }, 
+      },
+      secure: false
     }),
 		     
   },
