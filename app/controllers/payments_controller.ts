@@ -102,15 +102,19 @@ export default class PaymentsController {
 
     async see_payments({ request, response }: HttpContext){
         try {
-            const {status} = request.qs()
+            const {status} = request.qs()            
             var payments
 
-            if (status) {
-                payments = await db.from('payments').where('status', status).orderBy('updated_at')
+            if (status){
+                if (status == 'closed') {
+                    payments = await db.from('payments').where('status', status).orderBy('updated_at')
+                } else {
+                    payments = await db.from('payments').whereNot('status', 'closed').orderBy('updated_at')
+                } 
             } else {
                 payments = await db.from('payments').orderBy('updated_at')
             }
-
+            
             return response.status(200).send(res.provide(payments, `Lista de pagos`))    
 
         } catch (error) {
@@ -138,13 +142,40 @@ export default class PaymentsController {
 
     async payment_is_paid({ request, response }: HttpContext){
         try {
-            const { id } = request.params()        
+            const {id} = request.params()        
             if (!id) return response.status(500).send(res.inform('El id es necesario')) 
             
-            const payment_platform = await PaymentPlatform.findOrFail(id)
-            await payment_platform.delete()
+            const payment = await Payment.findOrFail(id)
+            for(const product of payment.products){
+                const product_received = await Product.findOrFail(product.id)
+                product_received.reserved_quantity -= product.quantity
+                product_received.total_quantity -= product.quantity
+                await product_received.save()
+            }
+            
+            payment.status = 'paid'
+            await payment.save()
 
-            return response.status(200).send(res.provide(null, `La cuenta de pago ${payment_platform.name} ha sido borrada exitosamente`))    
+            return response.status(200).send(res.provide(null, `El pedido ${payment.id} ha sido pagado exitosamente`))    
+        
+        } catch (error) {
+            console.log(error);
+            if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe esta cuenta de pago'))
+            return response.status(500).send(res.unexpected())
+        }
+    }
+
+    async payment_is_closed({ request, response }: HttpContext){
+        try {
+            const {id} = request.params()        
+            if (!id) return response.status(500).send(res.inform('El id es necesario')) 
+            
+                const payment = await Payment.findOrFail(id)
+                payment.status = 'closed'
+                await payment.save()
+
+
+            return response.status(200).send(res.provide(null, `El pedido ${payment.id} ha sido completado`))    
         
         } catch (error) {
             console.log(error);
@@ -159,6 +190,14 @@ export default class PaymentsController {
             if (!id) return response.status(500).send(res.inform('El id es necesario')) 
             
             const payment = await Payment.findOrFail(id)
+            if (payment.status != 'closed'){
+                for(const product of payment.products) {                
+                    const product_recived = await Product.findOrFail(product.id)
+                    product_recived.available_quantity += product.quantity
+                    product_recived.reserved_quantity -= product.quantity
+                    await product_recived.save()
+                }    
+            } 
             await payment.delete()
 
             return response.status(200).send(res.provide(null, `El pago ${payment.id} ha sido borrado exitosamente`))    
@@ -171,22 +210,22 @@ export default class PaymentsController {
 
     }
 
-    async pause_payment({ request, response }: HttpContext){
-        try {
-            const { id } = request.params()        
-            if (!id) return response.status(500).send(res.inform('El id es necesario')) 
+    // async pause_payment({ request, response }: HttpContext){
+    //     try {
+    //         const { id } = request.params()        
+    //         if (!id) return response.status(500).send(res.inform('El id es necesario')) 
             
-            const payment_platform = await PaymentPlatform.findOrFail(id)
-            await payment_platform.delete()
+    //         const payment_platform = await PaymentPlatform.findOrFail(id)
+    //         await payment_platform.delete()
 
-            return response.status(200).send(res.provide(null, `La cuenta de pago ${payment_platform.name} ha sido borrada exitosamente`))    
+    //         return response.status(200).send(res.provide(null, `La cuenta de pago ${payment_platform.name} ha sido borrada exitosamente`))    
         
-        } catch (error) {
-            console.log(error);
-            if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe esta cuenta de pago'))
-            return response.status(500).send(res.unexpected())
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error);
+    //         if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe esta cuenta de pago'))
+    //         return response.status(500).send(res.unexpected())
+    //     }
+    // }
 
     async create_payment_platform({ request, response }: HttpContext){
         try {

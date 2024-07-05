@@ -10,7 +10,6 @@ export default class ProductsController {
         try {
             const { page, limit } = request.params()     
             const {priceSort} = request.qs()   
-            let ascOrDesc
             let products
             
             
@@ -43,7 +42,7 @@ export default class ProductsController {
             const product = await Product.findOrFail(id)
     
             if (!product) return response.status(200).send(res.inform('No existe este producto')) 
-            product.imgURL = product.$extras.imgURL
+            product.img_url = product.$extras.img_url
 
             return response.status(200).send(res.provide(product, 'Producto encontrado'))
         } catch (error) {
@@ -109,8 +108,16 @@ export default class ProductsController {
                 category_id,
                 available_quantity,
                 price,
-                imgURL
+                img_url
             } = request.body()
+            
+            if (!name ||
+                !category_id ||
+                !available_quantity ||
+                !price ||
+                !img_url) {
+                return response.status(400).send(res.inform('Los datos nombre, categoria, quantity, price, imgURL son requeridas')) 
+            }
             
             const category = await Category.find(category_id)
             if (!category) {
@@ -127,7 +134,7 @@ export default class ProductsController {
                 available_quantity: available_quantity,
                 total_quantity: available_quantity,
                 price: price,
-                imgURL: imgURL
+                img_url
             })
             
             return response.status(200).send(res.provide(saved, `El producto ${saved[0].name} fue guardado correctamente bajo el id ${saved[0].id}`))    
@@ -159,22 +166,27 @@ export default class ProductsController {
     async update({ request, response }: HttpContext){
         try {
             const { id } = request.params()
-            const { name, price, description, available_quantity} = request.body()   
-    
-            if (!name && !price) return response.status(400).send(res.inform('No hay informacion para actualizar')) 
+            const { name, category_id, price, imgURL, description, available_quantity} = request.body()               
+            
+            if (!name && !category_id && !price && !imgURL && !description && !available_quantity) return response.status(400).send(res.inform('No hay informacion para actualizar')) 
             
             const product = await Product.findOrFail(id)
             if (name) product.name = name
             if (price) product.price = price 
+            if (category_id) {
+                const category = await Category.find(category_id)
+                if (!category) return response.status(404).send(res.inform('No existe dicha categoria')) 
+                product.category_id = category.id
+            }
             if (description) product.description = description 
             if (available_quantity) product.available_quantity = available_quantity 
-
+            if (imgURL) product.img_url = imgURL
             await product.save()
 
             return response.status(200).send(res.provide(null, `El producto ${product.name} ha sido actualizado exitosamente`))    
 
         } catch (error) {
-            console.log(error.code);
+            console.log(error);
             if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este producto'))
             return response.status(500).send(res.unexpected())
         }

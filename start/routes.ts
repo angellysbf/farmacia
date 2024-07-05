@@ -30,24 +30,26 @@ router.group(() => {
 router.group(() => {
   const CategoriesController = () => import('#controllers/categories_controller')
   router.get('/', [CategoriesController, 'list'])
+  router.get('/:category', [CategoriesController, 'search'])
 
-  router.post('', [CategoriesController, 'add']).use(middleware.token())
+  router.post('/', [CategoriesController, 'add']).use(middleware.token())
 
-  router.delete('', [CategoriesController, 'delete']).use(middleware.token())
+  router.delete('/', [CategoriesController, 'delete']).use(middleware.token())
 })
 .prefix('/categories')
 
 
 router.group(() => {
   const PaymentsController = () => import('#controllers/payments_controller')
-  router.get('', [PaymentsController, 'see_payments'])
+  router.get('/', [PaymentsController, 'see_payments'])
   router.get('/:search', [PaymentsController, 'search_payments'])
   router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
 
   router.post('/make-payment', [PaymentsController, 'make_payment'])
   router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform'])
 
-  router.put('/paid', [PaymentsController, 'payment_is_paid'])
+  router.put('/payment-paid/:id', [PaymentsController, 'payment_is_paid'])
+  router.put('/payment-closed/:id', [PaymentsController, 'payment_is_closed'])
 
   router.delete('/delete-payment/:id', [PaymentsController, 'delete_payment'])
   router.delete('/delete-payment-platform/:id', [PaymentsController, 'delete_payment_platform'])

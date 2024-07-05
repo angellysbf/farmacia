@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.integer('category_id').unsigned().references('id').inTable('categories')
       table.string('name').notNullable
       table.text('description').notNullable
-      table.string('imgURL').notNullable
+      table.string('img_url').notNullable
       table.integer('available_quantity').notNullable
       table.integer('reserved_quantity').defaultTo(0)
       table.integer('total_quantity').notNullable

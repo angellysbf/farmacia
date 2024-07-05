@@ -7,8 +7,8 @@ export default class Product extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @hasOne(() => Category)
-  declare category_id: HasOne<typeof Category>
+  @column()
+  declare category_id: number
 
   @column()
   declare name: string
@@ -17,7 +17,7 @@ export default class Product extends BaseModel {
   declare description: string
 
   @column()
-  declare imgURL: string 
+  declare img_url: string 
 
   @column()
   declare available_quantity: number
