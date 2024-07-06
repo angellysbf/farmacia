@@ -42,8 +42,8 @@ export default class ProductsController {
             const product = await Product.findOrFail(id)
     
             if (!product) return response.status(200).send(res.inform('No existe este producto')) 
-            product.img_url = product.$extras.img_url
-
+                console.log(product);
+                
             return response.status(200).send(res.provide(product, 'Producto encontrado'))
         } catch (error) {
             console.log(error);

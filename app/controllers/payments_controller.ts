@@ -7,6 +7,7 @@ import User from '#models/user'
 import PaymentPlatform from '#models/payment_platform'
 import Payment from '#models/payment'
 import db from '@adonisjs/lucid/services/db'
+import jwt from 'jsonwebtoken'
 
 const res = new ApiResponse()
 
@@ -16,18 +17,29 @@ export default class PaymentsController {
             const {
                 payment_platform_id, 
                 products, 
-                user_id, 
                 transference_id,
                 total,
                 address
             } = request.body()
-            
+            const {authorization} = request.headers()
+            var user_id
             if (!payment_platform_id || 
-                !products || 
-                !transference_id ||
+                products.lenght <= 0 || 
                 !total
             ) return response.status(400).send(res.inform('Falta algun dato importante para realizar el pago')) 
             
+            if (!transference_id && 
+                !address
+            ) return response.status(400).send(res.inform('Debe Haber al menos una id de transferencia o una direccion de envio')) 
+
+            const token = authorization?.substring(7)
+
+            if (token) {
+                var decoded = jwt.verify(token, process.env.JWT_SECRET);            
+                user_id = decoded.id
+            }
+             
+
             const is_payment_platform = await PaymentPlatform.find(payment_platform_id)
             if (!is_payment_platform) {
                 return response.status(404).send(res.inform(`La plataforma de id: ${payment_platform_id} no fue encontrada`))

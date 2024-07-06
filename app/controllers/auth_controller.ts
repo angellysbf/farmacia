@@ -90,7 +90,8 @@ console.log('hola');
 
     async send_password_recover({request, response}: HttpContext) {
         const {email} = request.body()
-
+        console.log('hola');
+        
         const is_user = await User.findBy('email', email)
         
         if (!is_user) {
@@ -99,7 +100,7 @@ console.log('hola');
 
         const token = jwt.sign({ user_id: is_user.id}, process.env.JWT_SECRET, {expiresIn: '1d'})
 
-        const url_token = process.env.FRONT_URL + token
+        const url_token = process.env.FRONT_URL + '/auth/change-password/' + token
         
         await mail.send((message) => {
             message
@@ -108,10 +109,10 @@ console.log('hola');
               .text(url_token)
           })
 
-        return response.status(200).send(res.provide(token, 'Link de recuperacion enviado'))
+        return response.status(200).send(res.provide(null, 'Link de recuperacion enviado'))
     }
 
-    async recover_password({request, response}: HttpContext) {
+    async change_password({request, response}: HttpContext) {
         try {
             const {verify_token, newPassword} = request.body()
 
@@ -138,8 +139,6 @@ console.log('hola');
             return response.status(200).send(res.provide(token, 'Contraseña actualizada exitosamente'))
     
         } catch (error) {
-            if (error.message == 'invalid token') return response.status(401).send(res.inform('Hay un problema con el token'))
-            if (error.message == 'jwt expired') return response.status(401).send(res.inform('token expired'))
             return response.status(500).send(res.unexpected())
     
         }

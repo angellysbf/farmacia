@@ -15,7 +15,6 @@ export default class UsersController {
             const token = authorization?.substring(7)
             
             var decoded = jwt.verify(token, process.env.JWT_SECRET);            
-            console.log(decoded);
             
             const user = await User.findOrFail(decoded.id)
     

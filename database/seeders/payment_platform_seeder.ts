@@ -13,6 +13,11 @@ export default class extends BaseSeeder {
         name: 'Pago Movil',
         account: '04555214552 Angie',
       },
+      {
+        name: 'Pago en casa',
+        account: 'Efectivo',
+      },
+
     ])
   }
 }

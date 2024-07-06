@@ -18,11 +18,11 @@ router.group(() => {
   router.get('list-produtcs/:page/:limit', [ProductsController, 'list'])
 
 
-  router.post('/create', [ProductsController, 'create'])
+  router.post('/create', [ProductsController, 'create']).use([middleware.token(), middleware.admin()])
 
-  router.delete('/delete/:id', [ProductsController, 'delete'])
+  router.delete('/delete/:id', [ProductsController, 'delete']).use([middleware.token(), middleware.admin()])
 
-  router.put('/update/:id', [ProductsController, 'update'])
+  router.put('/update/:id', [ProductsController, 'update']).use([middleware.token(), middleware.admin()])
   })
 .prefix('/products')
 
@@ -32,27 +32,27 @@ router.group(() => {
   router.get('/', [CategoriesController, 'list'])
   router.get('/:category', [CategoriesController, 'search'])
 
-  router.post('/', [CategoriesController, 'add']).use(middleware.token())
+  router.post('/', [CategoriesController, 'add']).use([middleware.token(), middleware.admin()])
 
-  router.delete('/', [CategoriesController, 'delete']).use(middleware.token())
+  router.delete('/', [CategoriesController, 'delete']).use([middleware.token(), middleware.admin()])
 })
 .prefix('/categories')
 
 
 router.group(() => {
   const PaymentsController = () => import('#controllers/payments_controller')
-  router.get('/', [PaymentsController, 'see_payments'])
-  router.get('/:search', [PaymentsController, 'search_payments'])
-  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
+  router.get('/', [PaymentsController, 'see_payments']).use([middleware.token(), middleware.vendor()])
+  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms']).use([middleware.token(), middleware.vendor()])
+  router.get('/:search', [PaymentsController, 'search_payments']).use([middleware.token(), middleware.vendor()])
 
   router.post('/make-payment', [PaymentsController, 'make_payment'])
-  router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform'])
+  router.post('/make-payment-platform', [PaymentsController, 'create_payment_platform']).use([middleware.token(), middleware.vendor()])
 
-  router.put('/payment-paid/:id', [PaymentsController, 'payment_is_paid'])
-  router.put('/payment-closed/:id', [PaymentsController, 'payment_is_closed'])
+  router.put('/payment-paid/:id', [PaymentsController, 'payment_is_paid']).use([middleware.token(), middleware.vendor()])
+  router.put('/payment-closed/:id', [PaymentsController, 'payment_is_closed']).use([middleware.token(), middleware.vendor()])
 
-  router.delete('/delete-payment/:id', [PaymentsController, 'delete_payment'])
-  router.delete('/delete-payment-platform/:id', [PaymentsController, 'delete_payment_platform'])
+  router.delete('/delete-payment/:id', [PaymentsController, 'delete_payment']).use([middleware.token(), middleware.vendor()])
+  router.delete('/delete-payment-platform/:id', [PaymentsController, 'delete_payment_platform']).use([middleware.token(), middleware.vendor()])
 })
 .prefix('/payments')
 
@@ -71,6 +71,9 @@ router.group(() => {
   const AuthController = () => import('#controllers/auth_controller')
   router.post('/sign-up', [AuthController, 'signup'])
   router.post('/log-in', [AuthController, 'login'])
+  router.post('/password-recover', [AuthController, 'send_password_recover'])
+  router.put('/change-password', [AuthController, 'change_password'])
+
 })
 .prefix('/auth')
 
