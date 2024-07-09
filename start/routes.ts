@@ -83,6 +83,7 @@ router.group(() => {
   router.get('/payments', [UserController, 'payments'])
   router.get('/payments/:search', [UserController, 'search_payments'])
   router.put('/', [UserController, 'update'])
+  router.get('/is-admin', [UserController, 'is_admin'])
 })
 .prefix('/user').use(middleware.token())
 

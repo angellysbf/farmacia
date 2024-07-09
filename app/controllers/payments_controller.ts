@@ -53,7 +53,6 @@ export default class PaymentsController {
                 const quantity = product.quantity
 
                 const is_product = await Product.find(product_id)
-                console.log(is_product);
                 
                 if (!is_product) {
                     err = `Este producto ${product_id} no existe`   
@@ -221,23 +220,6 @@ export default class PaymentsController {
         }
 
     }
-
-    // async pause_payment({ request, response }: HttpContext){
-    //     try {
-    //         const { id } = request.params()        
-    //         if (!id) return response.status(500).send(res.inform('El id es necesario')) 
-            
-    //         const payment_platform = await PaymentPlatform.findOrFail(id)
-    //         await payment_platform.delete()
-
-    //         return response.status(200).send(res.provide(null, `La cuenta de pago ${payment_platform.name} ha sido borrada exitosamente`))    
-        
-    //     } catch (error) {
-    //         console.log(error);
-    //         if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe esta cuenta de pago'))
-    //         return response.status(500).send(res.unexpected())
-    //     }
-    // }
 
     async create_payment_platform({ request, response }: HttpContext){
         try {

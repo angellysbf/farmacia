@@ -13,7 +13,7 @@ export default class AdminMiddleware {
     
     var decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    if (decoded.rol_id != 1) throw new Exception('Aborting request')
+    if (decoded.rol_id != 1) throw new Exception('No es un admin')
     /**
      * Call next method in the pipeline and return its output
      */

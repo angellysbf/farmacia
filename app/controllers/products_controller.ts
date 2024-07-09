@@ -42,7 +42,6 @@ export default class ProductsController {
             const product = await Product.findOrFail(id)
     
             if (!product) return response.status(200).send(res.inform('No existe este producto')) 
-                console.log(product);
                 
             return response.status(200).send(res.provide(product, 'Producto encontrado'))
         } catch (error) {
@@ -156,7 +155,7 @@ export default class ProductsController {
             return response.status(200).send(res.provide(null, `El producto ${product.name} ha sido borrado exitosamente`))    
         
         } catch (error) {
-            console.log(error.code);
+            console.log(error);
             if (error.code == 'E_ROW_NOT_FOUND') return response.status(404).send(res.inform('No existe este producto'))
             return response.status(500).send(res.unexpected())
         }

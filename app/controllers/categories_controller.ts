@@ -35,7 +35,6 @@ export default class CategoriesController {
     async add({ request, response }: HttpContext){
         try {
             const {name} = request.body()
-            console.log('hola');
             
             const exist_category = await Category.findBy('name', name)
             
@@ -66,7 +65,6 @@ export default class CategoriesController {
                 return response.status(404).send(res.inform(`La categoria ${id} no existe`))    
             
             await category.delete()
-            console.log(category);
             if (!category.$isDeleted) 
                 return response.status(500).send(res.inform(`Hubo un error, no se ha podido borrar la categoria ${category.name}`))
 

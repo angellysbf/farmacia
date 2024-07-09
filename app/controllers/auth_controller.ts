@@ -13,7 +13,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class AuthController {
     async login({request, response}: HttpContext) {
         const {email, password} = request.body()
-console.log('hola');
 
         if(!email || !password) return response.status(400).send(res.inform('Los datos son obligatorios'))
 
@@ -90,7 +89,6 @@ console.log('hola');
 
     async send_password_recover({request, response}: HttpContext) {
         const {email} = request.body()
-        console.log('hola');
         
         const is_user = await User.findBy('email', email)
         

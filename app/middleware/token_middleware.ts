@@ -12,6 +12,7 @@ export default class TokenMiddleware {
      */
     try {
       const {authorization} = ctx.request.headers()
+
       const token = authorization?.substring(7)
 
       if (!token) throw new Exception('Falta el token de verificacion')
@@ -28,7 +29,9 @@ export default class TokenMiddleware {
       if (error.message == 'invalid token') {
         return ctx.response.status(401).send(res.inform('Este token fue danhado'))
       }
-      throw new Exception('Aborting Request')
+      console.log(error);
+      
+      throw new Exception('Aborting Request token')
      
     }
   }

@@ -8,11 +8,15 @@ export default class AdminMiddleware {
     /**
      * Middleware logic goes here (before the next call)
      */
-    const {token} = ctx.request.body()
+    const {authorization} = ctx.request.headers()
+
+    const token = authorization?.substring(7)
     
     var decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
     
-    if (decoded.rol_id != 2 && decoded.rol_id != 1) throw new Exception('Aborting request')
+    
+    if (decoded.rol_id != 2 && decoded.rol_id != 1) throw new Exception('No es un admin o vendedor')
     /**
      * Call next method in the pipeline and return its output
      */
