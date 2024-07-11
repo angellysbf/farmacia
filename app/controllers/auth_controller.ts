@@ -25,7 +25,7 @@ export default class AuthController {
             return response.status(404).send(res.inform('Contrasenha erronea'))
         }
         
-        const token = jwt.sign({ name: is_user.name, id: is_user.id, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
+        const token = jwt.sign({ name: is_user.name, id: is_user.id, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '120s'});
 
         return response.status(200).send(res.provide(token, 'Usuario Verificado'))
     }
@@ -38,11 +38,11 @@ export default class AuthController {
             
             
             if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*.^,#?&])[A-Za-z\d@$!%*,.^#?&]{8,}$/)){
-                return response.status(400).send(res.inform('La contraseña debe tener minimo 8 caracteres, 1 letra, 1 numero y un caracter especial'))
+                return response.status(400).send(res.inform('La contraseña debe tener mínimo 8 caracteres, 1 letra, 1 número y un carácter especial'))
             }
             
             if (!phone.match(/^\d{11}$/)) {
-                return response.status(400).send(res.inform('El numero de telefono debe ser 11 digitos'))
+                return response.status(400).send(res.inform('El número de telefono debe ser 11 digitos'))
             }
 
             if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)){
@@ -78,7 +78,7 @@ export default class AuthController {
                   .text('holis bb')
               })
           
-            const token = jwt.sign({ name: newUser[0].name, id: newUser[0].id, rol_id: newUser[0].rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
+            const token = jwt.sign({ name: newUser[0].name, id: newUser[0].id, rol_id: newUser[0].rol_id}, process.env.JWT_SECRET, {expiresIn: '120s'});
 
             return response.status(200).send(res.provide(token, 'Usuario Creado'))
         } catch (error) {
@@ -123,7 +123,7 @@ export default class AuthController {
             }
     
             if (!newPassword.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*.^,#?&])[A-Za-z\d@$!%*,.^#?&]{8,}$/)){
-                return response.status(403).send(res.inform('La contraseña debe tener minimo 8 caracteres, 1 letra, 1 numero y un caracter especial'))
+                return response.status(403).send(res.inform('La contraseña debe tener mínimo 8 caracteres, 1 letra, 1 número y un carácter especial'))
             }
     
             const hashedPassword = await hash.make(newPassword);
@@ -132,7 +132,7 @@ export default class AuthController {
     
             is_user.save()
     
-            const token = jwt.sign({ name: is_user.name, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
+            const token = jwt.sign({ name: is_user.name, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '120s'});
     
             return response.status(200).send(res.provide(token, 'Contraseña actualizada exitosamente'))
     

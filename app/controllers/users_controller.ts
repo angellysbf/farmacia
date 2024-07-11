@@ -78,14 +78,14 @@ export default class UsersController {
     
             if (password) {
                 if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*.^,#?&])[A-Za-z\d@$!%*,.^#?&]{8,}$/)){
-                    return response.status(400).send(res.inform('La contraseña debe tener minimo 8 caracteres, 1 letra, 1 numero y un caracter especial'))
+                    return response.status(400).send(res.inform('La contraseña debe tener mínimo 8 caracteres, 1 letra, 1 número y un carácter especial'))
                 }
                 const hashedPassword = await hash.make(password);
                 user.password = hashedPassword
             }      
             if (phone) {
                 if (!phone.match(/^\d{11}$/)) {
-                    return response.status(400).send(res.inform('El numero de telefono debe ser 11 digitos'))
+                    return response.status(400).send(res.inform('El número de telefono debe ser 11 digitos'))
                 }
                 user.phone = phone
             }     

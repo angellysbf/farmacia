@@ -42,7 +42,7 @@ router.group(() => {
 router.group(() => {
   const PaymentsController = () => import('#controllers/payments_controller')
   router.get('/', [PaymentsController, 'see_payments']).use([middleware.token(), middleware.vendor()])
-  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms']).use([middleware.token(), middleware.vendor()])
+  router.get('/see-payment-platforms', [PaymentsController, 'see_payment_platforms'])
   router.get('/:search', [PaymentsController, 'search_payments']).use([middleware.token(), middleware.vendor()])
 
   router.post('/make-payment', [PaymentsController, 'make_payment'])
