@@ -21,7 +21,9 @@ export default class AuthController {
         if (!is_user) {
             return response.status(404).send(res.inform('el usuario no fue encontrado'))
         }
-        if (await !hash.verify(is_user.password, password)) {
+        const password_ok = await hash.verify(is_user.password, password)
+
+        if (!password_ok) {
             return response.status(404).send(res.inform('Contrasenha erronea'))
         }
         
