@@ -6,6 +6,10 @@ export default class extends BaseSeeder {
     // Write your database queries inside the run method
     await PaymentPlatform.createMany([
       {
+        name: 'Pago en casa',
+        account: 'Efectivo',
+      },
+      {
         name: 'Banco Transferencia',
         account: '54654654651515152 Angie 24555462',
       },
@@ -13,11 +17,6 @@ export default class extends BaseSeeder {
         name: 'Pago Movil',
         account: '04555214552 Angie',
       },
-      {
-        name: 'Pago en casa',
-        account: 'Efectivo',
-      },
-
     ])
   }
 }

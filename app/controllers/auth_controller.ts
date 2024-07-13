@@ -27,7 +27,7 @@ export default class AuthController {
             return response.status(404).send(res.inform('Contrasenha erronea'))
         }
         
-        const token = jwt.sign({ name: is_user.name, id: is_user.id, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '120s'});
+        const token = jwt.sign({ name: is_user.name, id: is_user.id, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
 
         return response.status(200).send(res.provide(token, 'Usuario Verificado'))
     }
@@ -80,7 +80,7 @@ export default class AuthController {
                   .text('holis bb')
               })
           
-            const token = jwt.sign({ name: newUser[0].name, id: newUser[0].id, rol_id: newUser[0].rol_id}, process.env.JWT_SECRET, {expiresIn: '120s'});
+            const token = jwt.sign({ name: newUser[0].name, id: newUser[0].id, rol_id: newUser[0].rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
 
             return response.status(200).send(res.provide(token, 'Usuario Creado'))
         } catch (error) {
@@ -134,7 +134,7 @@ export default class AuthController {
     
             is_user.save()
     
-            const token = jwt.sign({ name: is_user.name, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '120s'});
+            const token = jwt.sign({ name: is_user.name, rol_id: is_user.rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
     
             return response.status(200).send(res.provide(token, 'Contraseña actualizada exitosamente'))
     

@@ -37,7 +37,7 @@ export default class UsersController {
             var decoded = jwt.verify(token, process.env.JWT_SECRET);            
             
             const payments = await db.from('payments').where('user_id', decoded.id).orderBy('id', 'desc')
-
+            
             return response.status(200).send(res.provide(payments, 'Lista de pagos'))
         } catch (error) {
             console.log(error);

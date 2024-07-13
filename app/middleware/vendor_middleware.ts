@@ -13,7 +13,6 @@ export default class AdminMiddleware {
     const token = authorization?.substring(7)
     
     var decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     
     
     if (decoded.rol_id != 2 && decoded.rol_id != 1) throw new Exception('No es un admin o vendedor')

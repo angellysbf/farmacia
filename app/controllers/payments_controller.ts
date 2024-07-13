@@ -22,6 +22,7 @@ export default class PaymentsController {
                 address
             } = request.body()
             const {authorization} = request.headers()
+            
             var user_id
             if (!payment_platform_id || 
                 products.lenght <= 0 || 
@@ -31,10 +32,10 @@ export default class PaymentsController {
             if (!transference_id && 
                 !address
             ) return response.status(400).send(res.inform('Debe Haber al menos una id de transferencia o una direccion de envio')) 
-
+            
             const token = authorization?.substring(7)
 
-            if (token) {
+            if (token == null) {
                 var decoded = jwt.verify(token, process.env.JWT_SECRET);            
                 user_id = decoded.id
             }
@@ -47,7 +48,6 @@ export default class PaymentsController {
 
             var err
             for (const product of products) {
-                console.log(product);
                 
                 const product_id = product.id
                 const quantity = product.quantity
@@ -66,6 +66,7 @@ export default class PaymentsController {
 
                 is_product.available_quantity = is_product.available_quantity - quantity
                 is_product.reserved_quantity = is_product.reserved_quantity + quantity
+                is_product.total_quantity = is_product.available_quantity + is_product.reserved_quantity
                 is_product.save()
             };       
             if (err) return response.status(500).send(res.inform(err)) 
@@ -83,8 +84,9 @@ export default class PaymentsController {
                     send_address = is_user.address
                 } 
             } 
-
-            if (typeof transference_id != 'string') return response.status(400).send(res.typeError('transference_id', 'string'))
+            if(transference_id){
+                if (typeof transference_id != 'string') return response.status(400).send(res.typeError('transference_id', 'string'))
+            }
             if (typeof total != 'number') return response.status(400).send(res.typeError('total', 'number'))
             if (address) {
                 if (typeof address != 'string') return response.status(400).send(res.typeError('address', 'string'))
@@ -206,6 +208,7 @@ export default class PaymentsController {
                     const product_recived = await Product.findOrFail(product.id)
                     product_recived.available_quantity += product.quantity
                     product_recived.reserved_quantity -= product.quantity
+                    product_recived.total_quantity = product_recived.available_quantity + product_recived.reserved_quantity
                     await product_recived.save()
                 }    
             } 
