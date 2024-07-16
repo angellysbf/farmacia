@@ -12,8 +12,7 @@ export default class ProductsController {
             const {priceSort} = request.qs()   
             let products
             
-            
-            if (!page || !limit) return response.status(500).send(res.inform('Se necesita establecer el número de pagina y el rango de items')) 
+            if (!page || !limit) return response.status(400).send(res.inform('Se necesita establecer el número de pagina y el rango de items')) 
 
             if (priceSort) {
                 if (priceSort != 'asc' || priceSort != 'desc') {

@@ -44,17 +44,17 @@ export default class AuthController {
             }
             
             if (!phone.match(/^\d{11}$/)) {
-                return response.status(400).send(res.inform('El número de telefono debe ser 11 digitos'))
+                return response.status(400).send(res.inform('El número de teléfono debe ser 11 dígitos'))
             }
 
             if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)){
-                return response.status(400).send(res.inform('El email es incorrecto'))
+                return response.status(400).send(res.inform('El correo electrónico es incorrecto'))
             }
             
             const hashedPassword = await hash.make(password);
 
             const is_user = await User.findBy('email', email)
-            if (is_user) return response.status(400).send(res.inform('el email ya esta en uso'))
+            if (is_user) return response.status(400).send(res.inform('El correo electrónico ya esta en uso'))
 
             const rol = await Rol.findBy('id', 3)
 
@@ -72,13 +72,6 @@ export default class AuthController {
                 rol_id: rol.id,
                 password: hashedPassword
             })
-
-            await mail.send((message) => {
-                message
-                  .to(email)
-                  .subject('Verify your email address')
-                  .text('holis bb')
-              })
           
             const token = jwt.sign({ name: newUser[0].name, id: newUser[0].id, rol_id: newUser[0].rol_id}, process.env.JWT_SECRET, {expiresIn: '1d'});
 

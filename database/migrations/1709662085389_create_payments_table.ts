@@ -13,6 +13,7 @@ export default class extends BaseSchema {
       table.float('total').notNullable
       table.string('status').defaultTo('unpaid')
       table.string('address').notNullable
+      table.string('phone').notNullable
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

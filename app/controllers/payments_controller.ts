@@ -16,22 +16,28 @@ export default class PaymentsController {
         try {
             const {
                 payment_platform_id, 
-                products, 
+                products,
                 transference_id,
                 total,
-                address
+                address,
+                phone
             } = request.body()
             const {authorization} = request.headers()
             
             var user_id
             if (!payment_platform_id || 
                 products.lenght <= 0 || 
-                !total
-            ) return response.status(400).send(res.inform('Falta algun dato importante para realizar el pago')) 
+                !total ||
+                !phone
+            ) return response.status(400).send(res.inform('Falta algún dato importante para realizar el pago')) 
             
+            if (!phone.match(/^\d{11}$/)) {
+                return response.status(400).send(res.inform('El número de teléfono debe ser 11 dígitos'))
+            }
+
             if (!transference_id && 
                 !address
-            ) return response.status(400).send(res.inform('Debe Haber al menos una id de transferencia o una direccion de envio')) 
+            ) return response.status(400).send(res.inform('Debe haber al menos una id de transferencia o una dirección de envío')) 
             
             const token = authorization?.substring(7)
 
@@ -39,8 +45,7 @@ export default class PaymentsController {
                 var decoded = jwt.verify(token, process.env.JWT_SECRET);            
                 user_id = decoded.id
             }
-             
-
+            
             const is_payment_platform = await PaymentPlatform.find(payment_platform_id)
             if (!is_payment_platform) {
                 return response.status(404).send(res.inform(`La plataforma de id: ${payment_platform_id} no fue encontrada`))
@@ -102,7 +107,8 @@ export default class PaymentsController {
                 transference_id: transference_id,
                 total: total,
                 status: 'reported',
-                address: send_address ? send_address : 'store'
+                address: send_address ? send_address : 'store',
+                phone: phone
             })
             
             return response.status(200).send(res.provide(saved, `El pago fue enviado correctamente bajo el id ${saved[0].id}`))    
@@ -232,7 +238,7 @@ export default class PaymentsController {
                 extra_data
             } = request.body()            
             
-            if (!name || !account) return response.status(400).send(res.inform('Falta algun dato importante para crear la opcion de pago')) 
+            if (!name || !account) return response.status(400).send(res.inform('Falta algún dato importante para crear la opcion de pago')) 
             
             if (typeof name != 'string') return response.status(400).send(res.typeError('name', 'string'))
             

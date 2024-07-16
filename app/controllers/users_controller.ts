@@ -85,13 +85,13 @@ export default class UsersController {
             }      
             if (phone) {
                 if (!phone.match(/^\d{11}$/)) {
-                    return response.status(400).send(res.inform('El número de telefono debe ser 11 digitos'))
+                    return response.status(400).send(res.inform('El número de teléfono debe ser 11 dígitos'))
                 }
                 user.phone = phone
             }     
             if (email) {
                 if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)){
-                    return response.status(400).send(res.inform('El email es incorrecto'))
+                    return response.status(400).send(res.inform('El correo electrónico es incorrecto'))
                 }
                 user.email = email
             }    

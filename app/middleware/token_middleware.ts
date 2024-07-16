@@ -27,11 +27,11 @@ export default class TokenMiddleware {
         return ctx.response.status(401).send(res.inform('token expired'))
       }
       if (error.message == 'invalid token') {
-        return ctx.response.status(401).send(res.inform('Este token fue danhado'))
+        return ctx.response.status(401).send(res.inform('Este token fue dañado'))
       }
       console.log(error);
       
-      throw new Exception('Aborting Request token')
+      throw new Exception('Aborting Request')
      
     }
   }

@@ -30,6 +30,9 @@ export default class Payment extends BaseModel {
   @column()
   declare address: string
 
+  @column()
+  declare phone: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
