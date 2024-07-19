@@ -41,7 +41,7 @@ export default class PaymentsController {
             
             const token = authorization?.substring(7)
 
-            if (token == null) {
+            if (token != null) {                
                 var decoded = jwt.verify(token, process.env.JWT_SECRET);            
                 user_id = decoded.id
             }
