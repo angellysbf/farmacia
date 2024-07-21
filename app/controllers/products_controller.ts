@@ -164,9 +164,9 @@ export default class ProductsController {
     async update({ request, response }: HttpContext){
         try {
             const { id } = request.params()
-            const { name, category_id, price, imgURL, description, available_quantity} = request.body()               
+            const { name, category_id, price, img_url, description, available_quantity} = request.body()               
             
-            if (!name && !category_id && !price && !imgURL && !description && !available_quantity) return response.status(400).send(res.inform('No hay informacion para actualizar')) 
+            if (!name && !category_id && !price && !img_url && !description && !available_quantity) return response.status(400).send(res.inform('No hay informacion para actualizar')) 
             
             const product = await Product.findOrFail(id)
             if (name) product.name = name
@@ -178,7 +178,7 @@ export default class ProductsController {
             }
             if (description) product.description = description 
             if (available_quantity) product.available_quantity = available_quantity 
-            if (imgURL) product.img_url = imgURL
+            if (img_url) product.img_url = img_url
             await product.save()
 
             return response.status(200).send(res.provide(null, `El producto ${product.name} ha sido actualizado exitosamente`))    
